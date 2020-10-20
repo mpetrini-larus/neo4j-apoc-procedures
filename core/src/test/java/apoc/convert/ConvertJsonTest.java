@@ -93,7 +93,7 @@ public class ConvertJsonTest {
                 });
     }
 
-    @Test public void testToTreeSngdcrst() throws Exception {
+    @Test public void testToTreeKeanuFiveLevels() throws Exception {
         String movies = Util.readResourceFile("movies.cypher");
         try (Transaction tx = db.beginTx()) {
             tx.execute(movies);
@@ -106,13 +106,8 @@ public class ConvertJsonTest {
                 (row) -> {
                     Map root = (Map) row.get("value");
                     assertEquals("Person", root.get("_type"));
+                    assertEquals(7, ((List) root.get("acted_in")).size());
                 });
-
-        testCall(db, "call dbms.components() yield name, versions, edition unwind versions as version return name, version, edition",
-                (row) -> {
-                    String root = (String) row.get("versions");
-                });
-
 
     }
 
