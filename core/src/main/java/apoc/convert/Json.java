@@ -113,7 +113,6 @@ public class Json {
                         Map<String, Object> mMap = toMap(m, nodes);
                         mMap = addRelProperties(mMap, typeName, r, rels);
                         maps.put(m.getId(), mMap);
-
                         list.add(maps.get(m.getId()));
                     }
                 }
