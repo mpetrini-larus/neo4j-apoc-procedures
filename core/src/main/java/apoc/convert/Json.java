@@ -80,7 +80,20 @@ public class Json {
         Map<String, List<String>> rels = conf.getRels();
 
         Map<Long, Map<String, Object>> maps = new HashMap<>(paths.size() * 100);
+        String prev = paths.get(0).toString();
+        List<Node> root= paths.stream()
+                .map(Path::startNode).distinct()
+                .collect(Collectors.toList());
         for (Path path : paths) {
+            if(!path.toString().startsWith(prev)){
+                prev = path.toString();
+                Map<Long, Map<String, Object>> tmp = new HashMap<>(paths.size() * 100);
+                for(Node r : root) {
+                    tmp.put(r.getId(), maps.remove(r.getId()));
+                }
+                maps.clear();
+                maps = tmp;
+            }
             Iterator<Entity> it = path.iterator();
             while (it.hasNext()) {
                 Node n = (Node) it.next();
@@ -96,19 +109,21 @@ public class Json {
                     Optional<Map<String, Object>> optMap = list.stream()
                             .filter(elem -> elem.get("_id").equals(m.getId()))
                             .findFirst();
-                    if (!optMap.isPresent()) {
+                    if (!optMap.isPresent() && !root.contains(m)) {
                         Map<String, Object> mMap = toMap(m, nodes);
                         mMap = addRelProperties(mMap, typeName, r, rels);
                         maps.put(m.getId(), mMap);
+
                         list.add(maps.get(m.getId()));
                     }
                 }
             }
         }
+        Map<Long, Map<String, Object>> tmp = maps;
         return paths.stream()
                 .map(Path::startNode)
                 .distinct()
-                .map(n -> maps.remove(n.getId()))
+                .map(n -> tmp.remove(n.getId()))
                 .map(m -> m == null ? Collections.<String,Object>emptyMap() : m)
                 .map(MapResult::new);
     }
