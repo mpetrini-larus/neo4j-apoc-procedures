@@ -1,6 +1,7 @@
 package apoc.convert;
 
 import apoc.util.TestUtil;
+import apoc.util.Util;
 import junit.framework.TestCase;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hamcrest.MatcherAssert;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.QueryExecutionException;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.internal.helpers.collection.MapUtil;
 import org.neo4j.test.rule.DbmsRule;
 import org.neo4j.test.rule.ImpermanentDbmsRule;
@@ -90,6 +92,25 @@ public class ConvertJsonTest {
                     assertEquals(true, actors.get(0).get("acted_in.role").toString().matches("R[12]"));
                 });
     }
+
+    @Test public void testToTreeKeanuFiveLevels() throws Exception {
+        String movies = Util.readResourceFile("movies.cypher");
+        try (Transaction tx = db.beginTx()) {
+            tx.execute(movies);
+            tx.commit();
+        }
+        testCall(db, "match path = (k:Person {name:'Keanu Reeves'})-[*..5]-(x) " +
+                        "with collect(path) as paths " +
+                        "call apoc.convert.toTree(paths) yield value " +
+                        "return value",
+                (row) -> {
+                    Map root = (Map) row.get("value");
+                    assertEquals("Person", root.get("_type"));
+                    assertEquals(7, ((List) root.get("acted_in")).size());
+                });
+
+    }
+
     @Test public void testToTreeUpperCaseRels() throws Exception {
         testCall(db, "CREATE p1=(m:Movie {title:'M'})<-[:ACTED_IN {role:'R1'}]-(:Actor {name:'A1'}), " +
                 " p2 = (m)<-[:ACTED_IN  {role:'R2'}]-(:Actor {name:'A2'}) WITH [p1,p2] as paths " +
