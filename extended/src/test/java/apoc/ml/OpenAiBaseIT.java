@@ -23,17 +23,17 @@ import static apoc.util.TestUtil.testResult;
 import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 
-public class OpenAIIT {
+public abstract class OpenAiBaseIT {
 
     private String openaiKey;
-    
-    public static final String GPT_35_MODEL = "gpt-3.5-turbo";
 
     @Rule
     public DbmsRule db = new ImpermanentDbmsRule();
 
-    public OpenAIIT() {
+    public OpenAiBaseIT() {
     }
+
+    abstract String getDefModel();
 
     @Before
     public void setUp() throws Exception {
@@ -130,8 +130,8 @@ public class OpenAIIT {
 
     @Test
     public void chatCompletionGpt35Turbo() {
-        testCall(db, CHAT_COMPLETION_QUERY, Map.of("apiKey",openaiKey, "conf", Map.of(MODEL_CONF_KEY, GPT_35_MODEL)),
-                (row) -> assertChatCompletion(row, GPT_35_MODEL));
+        testCall(db, CHAT_COMPLETION_QUERY, Map.of("apiKey",openaiKey, "conf", Map.of(MODEL_CONF_KEY, getDefModel())),
+                (row) -> assertChatCompletion(row, getDefModel()));
     }
 
     @Test
@@ -194,7 +194,7 @@ public class OpenAIIT {
     @Test
     public void chatCompletionNullGpt35Turbo() {
         assertNullInputFails(db, "CALL apoc.ml.openai.chat(null, $apiKey, $conf)",
-                Map.of("apiKey", openaiKey, "conf", Map.of(MODEL_CONF_KEY, GPT_35_MODEL))
+                Map.of("apiKey", openaiKey, "conf", Map.of(MODEL_CONF_KEY, getDefModel()))
         );
     }
 

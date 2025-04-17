@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static apoc.ml.OpenAI.GPT_4O_MODEL;
-import static apoc.ml.OpenAIIT.GPT_35_MODEL;
+import static apoc.ml.OpenAiIT.OpenAIITVersion3.GPT_35_MODEL;
 import static apoc.ml.Prompt.API_KEY_CONF;
 import static apoc.ml.MLUtil.MODEL_CONF_KEY;
 import static apoc.ml.Prompt.UNKNOWN_ANSWER;
