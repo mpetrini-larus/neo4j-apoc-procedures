@@ -29,12 +29,14 @@ import static apoc.util.TestUtil.testCall;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class OpenAIAnthropicIT {
+public abstract class OpenAiAnthropicBaseIT {
 
-    private String anthropicApiKey;
+    protected String anthropicApiKey;
     
     @Rule
     public DbmsRule db = new ImpermanentDbmsRule();
+
+    abstract String getDefModel();
 
     @Before
     public void setUp() throws Exception {
@@ -61,7 +63,8 @@ public class OpenAIAnthropicIT {
     @Test
     public void chatWithAnthropic() {
         Map<String, Object> conf = Map.of(
-                API_TYPE_CONF_KEY, ANTHROPIC.name()
+                API_TYPE_CONF_KEY, ANTHROPIC.name(),
+                MODEL_CONF_KEY, getDefModel()
         );
         testCall(db, CHAT_COMPLETION_QUERY_WITHOUT_SYSTEM,
                 Map.of("conf", conf, "apiKey", anthropicApiKey),
@@ -104,7 +107,8 @@ public class OpenAIAnthropicIT {
         String query = "CALL apoc.ml.openai.chat($messages, $apiKey, $conf)";
 
         Map<String, Object> conf = Map.of(
-                API_TYPE_CONF_KEY, ANTHROPIC.name()
+                API_TYPE_CONF_KEY, ANTHROPIC.name(),
+                MODEL_CONF_KEY, getDefModel()
         );
         testCall(db, query,
                 Map.of( "messages", messages,"conf", conf, "apiKey", anthropicApiKey),
@@ -118,28 +122,10 @@ public class OpenAIAnthropicIT {
     }
 
     @Test
-    public void completionWithAnthropicNonDefaultModel() {
-        String modelId = "claude-3-haiku-20240307";
-        Map<String, Object> conf = Map.of(
-                API_TYPE_CONF_KEY, ANTHROPIC.name(),
-                MODEL_CONF_KEY, modelId
-        );
-        testCall(db, CHAT_COMPLETION_QUERY_WITHOUT_SYSTEM,
-                Map.of("conf", conf, "apiKey", anthropicApiKey),
-                (row) -> {
-                    var result = (Map<String,Object>) row.get("value");
-                    var contentList = (List<Map<String, Object>>) result.get("content");
-                    Map<String, Object> content = contentList.get(0);
-                    String generatedText = (String) content.get("text");
-                    assertTrue(generatedText.toLowerCase().contains("earth"),
-                            "Actual generatedText is " + generatedText);
-                });
-    }
-
-    @Test
     public void completionWithAnthropicNonDefaultMaxTokens() {
         Map<String, Object> conf = Map.of(
                 API_TYPE_CONF_KEY, ANTHROPIC.name(),
+                MODEL_CONF_KEY, getDefModel(),
                 MAX_TOKENS_TO_SAMPLE, 1
         );
         testCall(db, COMPLETION_QUERY_EXTENDED_PROMPT,
@@ -172,6 +158,7 @@ public class OpenAIAnthropicIT {
     public void completionWithAnthropicSmallTokenSize() {
         Map<String, Object> conf = Map.of(
                 API_TYPE_CONF_KEY, ANTHROPIC.name(),
+                MODEL_CONF_KEY, getDefModel(),
                 MAX_TOKENS, 1
         );
 
@@ -191,6 +178,7 @@ public class OpenAIAnthropicIT {
     public void completionWithAnthropicCustomVersion() {
         Map<String, Object> conf = Map.of(
                 API_TYPE_CONF_KEY, ANTHROPIC.name(),
+                MODEL_CONF_KEY, getDefModel(),
                 ANTHROPIC_VERSION, "2023-06-01"
         );
         testCall(db, CHAT_COMPLETION_QUERY_WITHOUT_SYSTEM,
@@ -209,6 +197,7 @@ public class OpenAIAnthropicIT {
     public void completionWithAnthropicWrongVersion() {
         Map<String, Object> conf = Map.of(
                 API_TYPE_CONF_KEY, ANTHROPIC.name(),
+                MODEL_CONF_KEY, getDefModel(),
                 ANTHROPIC_VERSION, "ajeje"
         );
 
@@ -224,6 +213,7 @@ public class OpenAIAnthropicIT {
     public void chatWithAnthropicWrongVersion() {
         Map<String, Object> conf = Map.of(
                 API_TYPE_CONF_KEY, ANTHROPIC.name(),
+                MODEL_CONF_KEY, getDefModel(),
                 ANTHROPIC_VERSION, "ajeje"
         );
 

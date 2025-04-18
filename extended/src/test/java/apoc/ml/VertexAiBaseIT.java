@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class VertexAIIT {
+public abstract class VertexAiBaseIT {
 
     private String vertexAiKey;
     private String vertexAiProject;
@@ -41,11 +41,13 @@ public class VertexAIIT {
             )
     );
 
+    abstract String getDefModel();
+
     @Rule
     public DbmsRule db = new ImpermanentDbmsRule();
     private Map<String, Object> parameters;
 
-    public VertexAIIT() {
+    public VertexAiBaseIT() {
     }
 
     @Before
@@ -126,7 +128,7 @@ public class VertexAIIT {
 
     @Test
     public void customWithCompleteStringGeminiFlash() {
-        customWithCompleteStringCustomModel("gemini-1.5-flash-001");
+        customWithCompleteStringCustomModel(getDefModel());
     }
 
     @Test
