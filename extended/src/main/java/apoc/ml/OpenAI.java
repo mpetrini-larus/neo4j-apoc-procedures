@@ -35,7 +35,7 @@ public class OpenAI {
     public static final String APIKEY_CONF_KEY = "apiKey";
     public static final String JSON_PATH_CONF_KEY = "jsonPath";
     public static final String PATH_CONF_KEY = "path";
-    public static final String GPT_4O_MODEL = "gpt-4o";
+    public static final String GPT_4O_MODEL = "gpt-4.1";
     public static final String FAIL_ON_ERROR_CONF = "failOnError";
     public static final String ENABLE_BACK_OFF_RETRIES_CONF_KEY = "enableBackOffRetries";
     public static final String ENABLE_EXPONENTIAL_BACK_OFF_CONF_KEY = "exponentialBackoff";
@@ -133,7 +133,7 @@ public class OpenAI {
                 } else {
                     configuration.putIfAbsent(PATH_CONF_KEY, "messages");
                     configForPayload.putIfAbsent(MAX_TOKENS, 1000);
-                    configForPayload.putIfAbsent(MODEL_CONF_KEY, "claude-3-5-sonnet-20240620");
+                    configForPayload.putIfAbsent(MODEL_CONF_KEY, "claude-3-7-sonnet-20250219");
                 }
 
                 configForPayload.remove(ANTHROPIC_VERSION);
@@ -227,8 +227,7 @@ public class OpenAI {
         if (checkNullInput(messages, failOnError)) return Stream.empty();
         messages = messages.stream().filter(ExtendedMapUtils::isNotEmpty).toList();
         if (checkEmptyInput(messages, failOnError)) return Stream.empty();
-        configuration.putIfAbsent("model", GPT_4O_MODEL);
-        return executeRequest(apiKey, configuration, "chat/completions", (String) configuration.get("model"), "messages", messages, "$", apocConfig, urlAccessChecker)
+        return executeRequest(apiKey, configuration, "chat/completions", GPT_4O_MODEL, "messages", messages, "$", apocConfig, urlAccessChecker)
                 .map(v -> (Map<String,Object>)v).map(MapResult::new);
         // https://platform.openai.com/docs/api-reference/chat/create
     /*
