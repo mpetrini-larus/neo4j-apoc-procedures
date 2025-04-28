@@ -6,7 +6,14 @@ import org.junit.runner.RunWith;
 @RunWith(Enclosed.class)
 public class OpenAiIT {
 
-    public static class OpenAIITVersion4 extends OpenAiBaseIT{
+    public static class OpenAIDefaultIT extends OpenAiBaseIT{
+        @Override
+        String getDefModel() {
+            return null;
+        }
+    }
+
+    public static class OpenAIVersion4IT extends OpenAiBaseIT{
 
         public static final String GPT_41_MODEL = "gpt-4.1";
 
@@ -16,7 +23,7 @@ public class OpenAiIT {
         }
     }
 
-    public static class OpenAIITVersion4turbo extends OpenAiBaseIT{
+    public static class OpenAIVersion4turboIT extends OpenAiBaseIT{
 
         public static final String GPT_41_MODEL = "gpt-4-turbo";
 
@@ -26,7 +33,7 @@ public class OpenAiIT {
         }
     }
 
-    public static class OpenAIITVersion3 extends OpenAiBaseIT{
+    public static class OpenAIVersion3IT extends OpenAiBaseIT{
 
         public static final String GPT_35_MODEL = "gpt-3.5-turbo";
 

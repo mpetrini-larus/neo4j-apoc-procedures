@@ -14,7 +14,14 @@ import static org.junit.Assert.assertFalse;
 @RunWith(Enclosed.class)
 public class MixedbreadAIIT {
 
-    public static class MixedbreadAITembedV1 extends MixedbreadAiBaseIT{
+    public static class MixedbreadDefaultIT extends MixedbreadAiBaseIT{
+        @Override
+        String getDefModel() {
+            return null;
+        }
+    }
+
+    public static class MixedbreadEmbedV1IT extends MixedbreadAiBaseIT{
 
         public static final String MBREAD_MODEL = "mxbai-embed-2d-large-v1";
 
@@ -41,7 +48,7 @@ public class MixedbreadAIIT {
         }
     }
 
-    public static class MixedbreadAITrerankV1 extends MixedbreadAiBaseIT{
+    public static class MixedbreadRerankV1IT extends MixedbreadAiBaseIT{
 
         public static final String MBREAD_MODEL = "mixedbread-ai/mxbai-rerank-large-v1";
 
@@ -51,7 +58,7 @@ public class MixedbreadAIIT {
         }
     }
 
-    public static class MixedbreadAITrerankV2 extends MixedbreadAiBaseIT{
+    public static class MixedbreadRerankV2IT extends MixedbreadAiBaseIT{
 
         public static final String MBREAD_MODEL = "mixedbread-ai/mxbai-rerank-large-v2";
 

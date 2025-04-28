@@ -1,6 +1,7 @@
 package apoc.ml;
 
 import apoc.util.TestUtil;
+import apoc.util.Util;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,9 +76,9 @@ public abstract class OpenAIMistralApiBaseIT {
     }
 
     private Map<String, Object> getParams(String model) {
-        Map<String, String> conf = Map.of(ENDPOINT_CONF_KEY, "https://api.mistral.ai/v1",
+        Map<String, String> conf = Util.map(ENDPOINT_CONF_KEY, "https://api.mistral.ai/v1",
                 MODEL_CONF_KEY, model);
 
-        return Map.of("apiKey", mistralApiKey, "conf", conf);
+        return Util.map("apiKey", mistralApiKey, "conf", conf);
     }
 }

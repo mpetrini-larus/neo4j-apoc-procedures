@@ -105,7 +105,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.query($query, {retries: $retries, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "query", "What movies has Tom Hanks acted in?",
                         "retries", 3L,
                         "apiKey", OPENAI_KEY
@@ -127,7 +127,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.query($query, {model: $model, retries: $retries, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "query", "What movies has Tom Hanks acted in?",
                         "retries", 2L,
                         "apiKey", OPENAI_KEY,
@@ -158,7 +158,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.query($query, {model: $model, retries: $retries, apiKey: $apiKey, retryWithError: true})
                 """,
-                Map.of(
+                Util.map(
                         "query", UUID.randomUUID().toString(),
                         "retries", 10L,
                         "apiKey", OPENAI_KEY,
@@ -176,7 +176,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.query($query, {retries: $retries, apiKey: $apiKey, retryWithError: true})
                 """,
-                Map.of(
+                Util.map(
                         "query", UUID.randomUUID().toString(),
                         "retries", 10L,
                         "apiKey", OPENAI_KEY
@@ -193,7 +193,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.schema({apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "apiKey", OPENAI_KEY
                 ),
                 (r) -> {
@@ -208,7 +208,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.cypher($query, {count: $numOfQueries, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "query", "Who are the actors which also directed a movie?",
                         "numOfQueries", numOfQueries,
                         "apiKey", OPENAI_KEY
@@ -262,20 +262,20 @@ public abstract class PromptBaseIT {
     private void testCypherWithSchemaCommon(String question, Integer size) {
         long numOfQueries = 4L;
         String schema = TestUtil.singleResultFirstColumn(db, "CALL apoc.ml.schema({apiKey: $apiKey})",
-                Map.of("apiKey", OPENAI_KEY));
+                Util.map("apiKey", OPENAI_KEY));
 
         String humanDescriptionSchema = "The human description of the schema is the following:" +
                                         "```\n%s\n```"
                                                 .formatted(schema);
 
         List<Map> additionalPrompts = List.of(
-                Map.of("role", "system", "content", humanDescriptionSchema)
+                Util.map("role", "system", "content", humanDescriptionSchema)
         );
         
         testResult(db, """
                 CALL apoc.ml.cypher($query, {count: $numOfQueries, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "query", question,
                         "numOfQueries", numOfQueries,
                         "apiKey", OPENAI_KEY
@@ -284,7 +284,7 @@ public abstract class PromptBaseIT {
         );
         
         testResult(db, "CALL apoc.ml.cypher($query, {count: $numOfQueries, apiKey: $apiKey, additionalPrompts: $additionalPrompts})",
-                Map.of(
+                Util.map(
                         "query", question,
                         "numOfQueries", numOfQueries,
                         "apiKey", OPENAI_KEY,
@@ -296,7 +296,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.query($query, {apiKey: $apiKey, retries: $retries, retryWithError: true}) YIELD query
                 """,
-                Map.of(
+                Util.map(
                         "query", question,
                         "retries", 10L,
                         "apiKey", OPENAI_KEY
@@ -305,7 +305,7 @@ public abstract class PromptBaseIT {
         );
 
         testResult(db, "CALL apoc.ml.query($query, {apiKey: $apiKey, additionalPrompts: $additionalPrompts, retries: $retries, retryWithError: true}) YIELD query ",
-                Map.of(
+                Util.map(
                         "query", question,
                         "retries", 10L,
                         "apiKey", OPENAI_KEY,
@@ -321,7 +321,7 @@ public abstract class PromptBaseIT {
         testResult(db, """
                 CALL apoc.ml.cypher($query, {model: $model, count: $numOfQueries, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "query", "Who are the actors which also directed a movie?",
                         "numOfQueries", numOfQueries,
                         "apiKey", OPENAI_KEY,
@@ -344,7 +344,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
                 CALL apoc.ml.fromCypher($query, {model: $model, retries: $retries, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "query", "MATCH (p:Person {name: \"Tom Hanks\"})-[:ACTED_IN]->(m:Movie) RETURN m",
                         "retries", 2L,
                         "apiKey", OPENAI_KEY,
@@ -365,7 +365,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
                 CALL apoc.ml.fromCypher($query, {retries: $retries, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "query", "MATCH (p:Person {name: \"Tom Hanks\"})-[:ACTED_IN]->(m:Movie) RETURN m",
                         "retries", 2L,
                         "apiKey", OPENAI_KEY
@@ -387,7 +387,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
                 CALL apoc.ml.fromQueries($queries, {model: $model, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "queries", queries,
                         "apiKey", OPENAI_KEY,
                         "model", getDefModel()
@@ -407,7 +407,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
                 CALL apoc.ml.fromQueries($queries, {apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "queries", queries,
                         "apiKey", OPENAI_KEY
                 ),
@@ -426,7 +426,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
                 CALL apoc.ml.fromQueries($queries, {model: $model, apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "queries", queries,
                         "apiKey", OPENAI_KEY,
                         "model", getDefModel()
@@ -445,7 +445,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
                 CALL apoc.ml.fromQueries($queries, {apiKey: $apiKey})
                 """,
-                Map.of(
+                Util.map(
                         "queries", queries,
                         "apiKey", OPENAI_KEY
                 ),
@@ -463,7 +463,7 @@ public abstract class PromptBaseIT {
             testCall(db, """
                 CALL apoc.ml.fromQueries($queries, {model: $model, apiKey: $apiKey})
                 """,
-                    Map.of(
+                    Util.map(
                             "queries", queries,
                             "apiKey", OPENAI_KEY,
                             "model", getDefModel()
@@ -482,7 +482,7 @@ public abstract class PromptBaseIT {
             testCall(db, """
                 CALL apoc.ml.fromQueries($queries, {apiKey: $apiKey})
                 """,
-                    Map.of(
+                    Util.map(
                             "queries", queries,
                             "apiKey", OPENAI_KEY
                     ),
@@ -500,7 +500,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
             CALL apoc.ml.fromQueries($queries, {model: $model, apiKey: $apiKey})
             """,
-                Map.of(
+                Util.map(
                         "queries", queries,
                         "apiKey", OPENAI_KEY,
                         "model", getDefModel()
@@ -518,7 +518,7 @@ public abstract class PromptBaseIT {
         testCall(db, """
             CALL apoc.ml.fromQueries($queries, {apiKey: $apiKey})
             """,
-                Map.of(
+                Util.map(
                         "queries", queries,
                         "apiKey", OPENAI_KEY
                 ),

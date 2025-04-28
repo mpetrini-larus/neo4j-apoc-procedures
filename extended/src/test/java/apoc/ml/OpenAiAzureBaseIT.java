@@ -1,6 +1,7 @@
 package apoc.ml;
 
 import apoc.util.TestUtil;
+import apoc.util.Util;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -68,8 +69,8 @@ public abstract class OpenAiAzureBaseIT {
 
     @Test
     public void embeddingFixPath() {
-        Map<String, Object> params = Map.of("apiKey", OPENAI_KEY,
-                "conf", Map.of(ENDPOINT_CONF_KEY, OPENAI_EMBEDDING_URL,
+        Map<String, Object> params = Util.map("apiKey", OPENAI_KEY,
+                "conf", Util.map(ENDPOINT_CONF_KEY, OPENAI_EMBEDDING_URL,
                         API_TYPE_CONF_KEY, OpenAIRequestHandler.Type.AZURE.name(),
                         API_VERSION_CONF_KEY, OPENAI_AZURE_API_VERSION,
                         PATH_CONF_KEY, "openai/deployments/text-embedding-ada-002/embeddings"
@@ -95,8 +96,8 @@ public abstract class OpenAiAzureBaseIT {
     }
 
     private Map<String, Object> getParams(String url) {
-        return Map.of("apiKey", OPENAI_KEY,
-                "conf", Map.of(ENDPOINT_CONF_KEY, url,
+        return Util.map("apiKey", OPENAI_KEY,
+                "conf", Util.map(ENDPOINT_CONF_KEY, url,
                         API_TYPE_CONF_KEY, OpenAIRequestHandler.Type.AZURE.name(),
                         API_VERSION_CONF_KEY, OPENAI_AZURE_API_VERSION,
                         // on Azure is available only "gpt-35-turbo"

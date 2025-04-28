@@ -1,6 +1,7 @@
 package apoc.ml.watson;
 
 import apoc.util.TestUtil;
+import apoc.util.Util;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -74,8 +75,8 @@ public abstract class WatsonBaseIT {
     @Test
     public void embedding() {
         testResult(db, "CALL apoc.ml.watson.embedding(['Some Text', 'Another Text'], $accessToken, $conf)",
-                Map.of("accessToken", accessToken,
-                        "conf", Map.of(REGION_CONF_KEY, endpointRegion)
+                Util.map("accessToken", accessToken,
+                        "conf", Util.map(REGION_CONF_KEY, endpointRegion)
                 ),
                 (r) -> {
                     Map<String, Object> row = r.next();
@@ -94,8 +95,8 @@ public abstract class WatsonBaseIT {
     public void embeddingWithWrongDate() {
         try {
             testCall(db, "CALL apoc.ml.watson.embedding(['Some Text', 'Another Text'], $accessToken, $conf)",
-                    Map.of("accessToken", accessToken,
-                            "conf", Map.of(REGION_CONF_KEY, endpointRegion, API_VERSION_CONF_KEY, "2025-33-33 ")
+                    Util.map("accessToken", accessToken,
+                            "conf", Util.map(REGION_CONF_KEY, endpointRegion, API_VERSION_CONF_KEY, "2025-33-33 ")
                     ),
                     (row) -> fail());
         } catch (Exception e) {
@@ -106,8 +107,8 @@ public abstract class WatsonBaseIT {
     @Test
     public void embeddingWithNonDefaultModel() {
         testResult(db, "CALL apoc.ml.watson.embedding(['Some Text', 'Another Text'], $accessToken, $conf)",
-                Map.of("accessToken", accessToken, 
-                        "conf", Map.of(MODEL_CONF_KEY, getDefModel(), REGION_CONF_KEY, endpointRegion)
+                Util.map("accessToken", accessToken, 
+                        "conf", Util.map(MODEL_CONF_KEY, getDefModel(), REGION_CONF_KEY, endpointRegion)
                 ),
                 (r) -> {
                     Map<String, Object> row = r.next();
@@ -131,8 +132,8 @@ public abstract class WatsonBaseIT {
     @Test
     public void embeddingWithNulls() {
         testResult(db, "CALL apoc.ml.watson.embedding([null, 'Some Text', null, 'Another Text'], $accessToken, $conf)",
-                Map.of("accessToken", accessToken,
-                        "conf", Map.of(REGION_CONF_KEY, endpointRegion)
+                Util.map("accessToken", accessToken,
+                        "conf", Util.map(REGION_CONF_KEY, endpointRegion)
                 ),
                 (r) -> {
 
@@ -170,8 +171,8 @@ public abstract class WatsonBaseIT {
     @Test
     public void completion() {
         testCall(db, "CALL apoc.ml.watson.completion('What color is the sky? Answer in one word: ', $accessToken, $conf)",
-                Map.of("accessToken", accessToken,
-                        "conf", Map.of(REGION_CONF_KEY, endpointRegion)
+                Util.map("accessToken", accessToken,
+                        "conf", Util.map(REGION_CONF_KEY, endpointRegion)
                 ),
                 (row) -> {
                     commonAssertions(row, "blue", 12L, "max_tokens");
@@ -181,9 +182,9 @@ public abstract class WatsonBaseIT {
     @Test
     public void completionWithParameters() {
         testCall(db, "CALL apoc.ml.watson.completion('What color is the sky? Answer in one word: ', $accessToken, $conf)",
-                Map.of("accessToken", accessToken,
-                        "conf", Map.of(REGION_CONF_KEY, endpointRegion, 
-                                "parameters", Map.of("max_new_tokens", 1000) 
+                Util.map("accessToken", accessToken,
+                        "conf", Util.map(REGION_CONF_KEY, endpointRegion, 
+                                "parameters", Util.map("max_new_tokens", 1000) 
                         )
                 ),
                 (row) -> {
@@ -198,8 +199,8 @@ public abstract class WatsonBaseIT {
                         {role:"system", content:"Only answer with a single word"},
                         {role:"user", content:"What planet do humans live on?"}
                     ],  $apiKey, $conf)""",
-                Map.of("apiKey", accessToken, 
-                        "conf", Map.of(REGION_CONF_KEY, endpointRegion)
+                Util.map("apiKey", accessToken, 
+                        "conf", Util.map(REGION_CONF_KEY, endpointRegion)
                 ), 
                 (row) -> {
                     commonAssertions(row, "earth", 19L, "eos_token");
@@ -213,9 +214,9 @@ public abstract class WatsonBaseIT {
                         {role:"system", content:"Only answer with a single word"},
                         {role:"user", content:"What planet do humans live on?"}
                     ],  $apiKey, $conf)""",
-                Map.of("apiKey", accessToken,
-                        "conf", Map.of(REGION_CONF_KEY, endpointRegion,
-                                "parameters", Map.of("max_new_tokens", 1000) 
+                Util.map("apiKey", accessToken,
+                        "conf", Util.map(REGION_CONF_KEY, endpointRegion,
+                                "parameters", Util.map("max_new_tokens", 1000) 
                         )
                 ), 
                 (row) -> commonAssertions(row, "\n", 19L, "eos_token"));
@@ -229,8 +230,8 @@ public abstract class WatsonBaseIT {
                                 {role:"system", content:"Only answer with a single word"},
                                 {role:"user", content:"What planet do humans live on?"}
                             ],  $apiKey, $conf)""",
-                    Map.of("apiKey", accessToken,
-                            "conf", Map.of(REGION_CONF_KEY, endpointRegion, ENDPOINT_CONF_KEY, "https://wrong/endpoint")
+                    Util.map("apiKey", accessToken,
+                            "conf", Util.map(REGION_CONF_KEY, endpointRegion, ENDPOINT_CONF_KEY, "https://wrong/endpoint")
                     ),
                     (row) -> fail());
         } catch (Exception e) {
@@ -256,14 +257,14 @@ public abstract class WatsonBaseIT {
     @Test
     public void completionNull() {
         assertNullInputFails(db, "CALL apoc.ml.watson.completion(null, $apiKey, $conf)",
-                Map.of("apiKey", accessToken, "conf", emptyMap())
+                Util.map("apiKey", accessToken, "conf", emptyMap())
         );
     }
 
     @Test
     public void chatCompletionNull() {
         assertNullInputFails(db, "CALL apoc.ml.watson.chat(null, $apiKey, $conf)",
-                Map.of("apiKey", accessToken, "conf", emptyMap())
+                Util.map("apiKey", accessToken, "conf", emptyMap())
         );
     }
 }

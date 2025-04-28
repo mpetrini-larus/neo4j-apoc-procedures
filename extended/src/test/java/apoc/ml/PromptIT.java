@@ -1,5 +1,6 @@
 package apoc.ml;
 
+import apoc.util.Util;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -19,7 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RunWith(Enclosed.class)
 public class PromptIT {
 
-    public static class PromptITVersion4 extends PromptBaseIT{
+    public static class PromptDefaultIT extends PromptBaseIT{
+        @Override
+        String getDefModel() {
+            return null;
+        }
+    }
+
+    public static class PromptVersion4IT extends PromptBaseIT{
 
         public static final String GPT_41_MODEL = "gpt-4.1";
 
@@ -29,7 +37,7 @@ public class PromptIT {
         }
     }
 
-    public static class PromptITVersion3 extends PromptBaseIT{
+    public static class PromptVersion3IT extends PromptBaseIT{
 
         public static final String GPT_35_MODEL = "gpt-3.5-turbo";
 
@@ -40,12 +48,12 @@ public class PromptIT {
 
         @Test
         public void ragWithRelevantAttributesComparedToIrrelevantOneAndChatProcedure() {
-            ragWithRelevantAttributesCommon(Map.of());
+            ragWithRelevantAttributesCommon(Util.map());
         }
 
         @Test
         public void ragWithRelevantAttributesComparedToIrrelevantOneAndChatProcedureGpt35Turbo() {
-            ragWithRelevantAttributesCommon(Map.of(MODEL_CONF_KEY, GPT_35_MODEL));
+            ragWithRelevantAttributesCommon(Util.map(MODEL_CONF_KEY, GPT_35_MODEL));
         }
 
         private void ragWithRelevantAttributesCommon(Map<String, Object> config) {

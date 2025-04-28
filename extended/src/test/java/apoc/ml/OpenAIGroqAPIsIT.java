@@ -6,9 +6,14 @@ import org.junit.runner.RunWith;
 @RunWith(Enclosed.class)
 public class OpenAIGroqAPIsIT {
 
+    public static class OpenAIGroqDfaultIT extends OpenAiGroqAPIsBaseIT{
+        @Override
+        String getDefModel() {
+            return null;
+        }
+    }
 
-
-    public static class OpenAIGroqAPIsITllama2 extends OpenAiGroqAPIsBaseIT{
+    public static class OpenAIGroqAPIsLlama2IT extends OpenAiGroqAPIsBaseIT{
 
         public static final String MODEL = "llama2-70b-4096";
 
@@ -18,7 +23,7 @@ public class OpenAIGroqAPIsIT {
         }
     }
 
-    public static class OpenAIGroqAPIsITmixtral extends OpenAiGroqAPIsBaseIT{
+    public static class OpenAIGroqAPIsMixtralIT extends OpenAiGroqAPIsBaseIT{
 
         public static final String MODEL = "mixtral-8x7b-32768";
 
@@ -28,7 +33,7 @@ public class OpenAIGroqAPIsIT {
         }
     }
 
-    public static class OpenAIGroqAPIsITllama3 extends OpenAiGroqAPIsBaseIT{
+    public static class OpenAIGroqAPIsLlama3IT extends OpenAiGroqAPIsBaseIT{
 
         public static final String MODEL = "llama-3.3-70b-versatile";
 

@@ -1,6 +1,7 @@
 package apoc.ml;
 
 import apoc.util.TestUtil;
+import apoc.util.Util;
 import apoc.util.collection.Iterators;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assume;
@@ -36,8 +37,8 @@ public abstract class VertexAiBaseIT {
     private String vertexAiProject;
     
     private final List<Map<String, Object>> streamContents = List.of(
-            Map.of("role", "user",
-                    "parts", List.of(Map.of("text", "translate book in italian"))
+            Util.map("role", "user",
+                    "parts", List.of(Util.map("text", "translate book in italian"))
             )
     );
 
@@ -57,7 +58,7 @@ public abstract class VertexAiBaseIT {
         vertexAiProject = System.getenv("VERTEXAI_PROJECT");
         Assume.assumeNotNull("No VERTEXAI_PROJECT environment configured", vertexAiProject);
         TestUtil.registerProcedure(db, VertexAI.class);
-        parameters = Map.of("apiKey", vertexAiKey, "project", vertexAiProject);
+        parameters = Util.map("apiKey", vertexAiKey, "project", vertexAiProject);
     }
 
     @Test
@@ -150,16 +151,16 @@ public abstract class VertexAiBaseIT {
         String base64Image = Base64.getEncoder().encodeToString(fileContent);
 
         List<Map<String, ?>> parts = List.of(
-                Map.of("text", "What is this?"),
-                Map.of("inlineData", Map.of(
+                Util.map("text", "What is this?"),
+                Util.map("inlineData", Util.map(
                         "mimeType", "image/png", "data", base64Image))
         );
         List<Map<String, ?>> contents = List.of(
-                Map.of("role", "user", "parts", parts)
+                Util.map("role", "user", "parts", parts)
         );
         Map<String, Object> params = new HashMap<>(parameters);
         params.put("contents", contents);
-        params.put("conf", Map.of(MODEL_CONF_KEY, "gemini-pro-vision"));
+        params.put("conf", Util.map(MODEL_CONF_KEY, "gemini-pro-vision"));
 
         testCall(db, """
                         CALL apoc.ml.vertexai.custom({contents: $contents},
@@ -183,7 +184,7 @@ public abstract class VertexAiBaseIT {
     @Test
     public void customWithCodeBison() {
         Map<String, Object> params = new HashMap<>(parameters);
-        params.put("conf", Map.of(MODEL_CONF_KEY, "codechat-bison", RESOURCE_CONF_KEY, PREDICT_RESOURCE));
+        params.put("conf", Util.map(MODEL_CONF_KEY, "codechat-bison", RESOURCE_CONF_KEY, PREDICT_RESOURCE));
         
         testCall(db, """
                CALL apoc.ml.vertexai.custom({instances:
@@ -197,7 +198,7 @@ public abstract class VertexAiBaseIT {
     @Test
     public void customWithChatCompletion() {
         Map<String, Object> params = new HashMap<>(parameters);
-        params.put("conf", Map.of(MODEL_CONF_KEY, "chat-bison", RESOURCE_CONF_KEY, PREDICT_RESOURCE));
+        params.put("conf", Util.map(MODEL_CONF_KEY, "chat-bison", RESOURCE_CONF_KEY, PREDICT_RESOURCE));
         
         testCall(db, """
             CALL apoc.ml.vertexai.custom({instances:
@@ -210,7 +211,7 @@ public abstract class VertexAiBaseIT {
 
     @Test
     public void customWithWrongHeader() {
-        Map<String, String> headers = Map.of("Content-Type", "invalid",
+        Map<String, String> headers = Util.map("Content-Type", "invalid",
                 "Authorization", "invalid");
         
         try {
@@ -219,7 +220,7 @@ public abstract class VertexAiBaseIT {
                             {
                              contents: $contents
                             }, $apiKey, $project, {headers: $headers})
-                """, Map.of("apiKey", vertexAiKey, 
+                """, Util.map("apiKey", vertexAiKey, 
                 "project", vertexAiProject, 
                 "headers", headers,
         "contents", streamContents), (row) -> fail("Should fail due to 401 response"));
@@ -259,8 +260,8 @@ public abstract class VertexAiBaseIT {
     private void customWithCompleteStringCustomModel(String model) {
         HashMap<String, Object> params = new HashMap<>(parameters);
         params.put("contents", List.of(
-                Map.of("role", "user",
-                        "parts", List.of(Map.of("text", "translate the word 'book' in italian"))
+                Util.map("role", "user",
+                        "parts", List.of(Util.map("text", "translate the word 'book' in italian"))
                 )
         ));
 

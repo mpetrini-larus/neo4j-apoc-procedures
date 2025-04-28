@@ -1,6 +1,7 @@
 package apoc.ml;
 
 import apoc.util.TestUtil;
+import apoc.util.Util;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,9 +44,9 @@ public abstract class OpenAiGroqAPIsBaseIT {
     }
     
     private Map<String, Object> getParams(String model) {
-        Map<String, String> conf = Map.of(ENDPOINT_CONF_KEY, "https://api.groq.com/openai/v1",
+        Map<String, String> conf = Util.map(ENDPOINT_CONF_KEY, "https://api.groq.com/openai/v1",
                 MODEL_CONF_KEY, model);
         
-        return Map.of("apiKey", groqApiKey, "conf", conf);
+        return Util.map("apiKey", groqApiKey, "conf", conf);
     }
 }

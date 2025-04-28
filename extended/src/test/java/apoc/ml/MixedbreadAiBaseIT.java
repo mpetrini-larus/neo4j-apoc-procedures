@@ -1,6 +1,7 @@
 package apoc.ml;
 
 import apoc.util.TestUtil;
+import apoc.util.Util;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -64,7 +65,7 @@ public abstract class MixedbreadAiBaseIT {
     @Test
     public void getEmbeddingWithNulls() {
         testResult(db, "CALL apoc.ml.mixedbread.embedding([null, 'Some Text', null, 'Another Text'], $apiKey, $conf)", 
-                Map.of("apiKey", apiKey, "conf", emptyMap()),
+                Util.map("apiKey", apiKey, "conf", emptyMap()),
                 (r) -> {
 
                     Map<String, Object> row = r.next();
@@ -204,7 +205,7 @@ public abstract class MixedbreadAiBaseIT {
                 "input", input
         );
         testCall(db, "CALL apoc.ml.mixedbread.custom($apiKey, $conf)",
-                Map.of("apiKey", getApiKey(), "conf", conf),
+                Util.map("apiKey", getApiKey(), "conf", conf),
                 row -> {
                     Map value = (Map) row.get("value");
 
