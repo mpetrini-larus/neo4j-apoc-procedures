@@ -40,12 +40,12 @@ public class VertexAiIT {
             )
     );
 
-    @Parameterized.Parameters(name = "chatModel: {0}")
+    @Parameterized.Parameters(name = "chatModel: {0}, embeddingModel: {1}")
     public static Collection<String[]> data() {
         return Arrays.asList(new String[][] {
                 // tests with model evaluated
-                {"gemini-1.5-flash-001"},
-                {"gemini-2.5-pro-exp-03-25"},
+                {"gemini-1.5-flash-001", "textembedding-gecko"},
+                {"gemini-2.5-pro-exp-03-25", "gemini-embedding-exp-03-07"},
                 // tests with default model
                 {null}
         });
@@ -53,6 +53,9 @@ public class VertexAiIT {
 
     @Parameterized.Parameter(0)
     public String chatModel;
+
+    @Parameterized.Parameter(1)
+    public String embeddingModel;
 
     @Rule
     public DbmsRule db = new ImpermanentDbmsRule();
@@ -73,7 +76,9 @@ public class VertexAiIT {
 
     @Test
     public void getEmbedding() {
-        testCall(db, "CALL apoc.ml.vertexai.embedding(['Some Text'], $apiKey, $project)", parameters,(row) -> {
+        var embParam = new HashMap<>(parameters);
+        embParam.put(MODEL_CONF_KEY, embeddingModel);
+        testCall(db, "CALL apoc.ml.vertexai.embedding(['Some Text'], $apiKey, $project)", embParam,(row) -> {
             System.out.println("row = " + row);
             assertEquals(0L, row.get("index"));
             assertEquals("Some Text", row.get("text"));
@@ -85,8 +90,10 @@ public class VertexAiIT {
 
     @Test
     public void getEmbeddingNull() {
+        var embParam = new HashMap<>(parameters);
+        embParam.put(MODEL_CONF_KEY, embeddingModel);
         testResult(db, "CALL apoc.ml.vertexai.embedding([null, 'Some Text', null, 'Other Text'], $apiKey, $project)",
-                parameters,
+                embParam,
                 r -> {
                     Set<String> actual = Iterators.asSet(r.columnAs("text"));
 
@@ -248,22 +255,28 @@ public class VertexAiIT {
 
     @Test
     public void embeddingsNull() {
+        var embParam = new HashMap<>(parameters);
+        embParam.put(MODEL_CONF_KEY, embeddingModel);
         assertNullInputFails(db, "CALL apoc.ml.vertexai.embedding(null, $apiKey, $project)",
-                parameters
+                embParam
         );
     }
     
     @Test
     public void completionNull() {
+        var embParam = new HashMap<>(parameters);
+        embParam.put(MODEL_CONF_KEY, chatModel);
         assertNullInputFails(db, "CALL apoc.ml.vertexai.completion(null, $apiKey, $project)",
-                parameters
+                embParam
         );
     }
 
     @Test
     public void chatCompletionNull() {
+        var embParam = new HashMap<>(parameters);
+        embParam.put(MODEL_CONF_KEY, chatModel);
         assertNullInputFails(db, "CALL apoc.ml.vertexai.chat(null, $apiKey, $project)",
-                parameters
+                embParam
         );
     }
 
