@@ -36,11 +36,9 @@ public class OpenAiGroqAPIsIT {
     public static Collection<String[]> data() {
         return Arrays.asList(new String[][] {
                 // tests with model evaluated
-                {"llama2-70b-4096"},
-                {"mixtral-8x7b-32768"},
-                {"llama-3.3-70b-versatile"},
-                // tests with default model
-                {null}
+                {"llama3-70b-8192"},
+                {"gemma2-9b-it"},
+                {"llama-3.3-70b-versatile"}
         });
     }
 
