@@ -6,9 +6,13 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.neo4j.test.rule.DbmsRule;
 import org.neo4j.test.rule.ImpermanentDbmsRule;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 import static apoc.ml.MLUtil.*;
@@ -20,14 +24,28 @@ import static apoc.util.TestUtil.testCall;
 /**
  * Tests with Groq API: https://console.groq.com/docs/quickstart 
  */
-public abstract class OpenAiGroqAPIsBaseIT {
+@RunWith(Parameterized.class)
+public class OpenAiGroqAPIsIT {
 
     private String groqApiKey;
 
     @Rule
     public DbmsRule db = new ImpermanentDbmsRule();
 
-    abstract String getDefModel();
+    @Parameterized.Parameters(name = "chatModel: {0}")
+    public static Collection<String[]> data() {
+        return Arrays.asList(new String[][] {
+                // tests with model evaluated
+                {"llama2-70b-4096"},
+                {"mixtral-8x7b-32768"},
+                {"llama-3.3-70b-versatile"},
+                // tests with default model
+                {null}
+        });
+    }
+
+    @Parameterized.Parameter(0)
+    public String chatModel;
 
     @Before
     public void setUp() throws Exception {
@@ -39,8 +57,8 @@ public abstract class OpenAiGroqAPIsBaseIT {
     @Test
     public void chatCompletionWithLlama2() {
         testCall(db, CHAT_COMPLETION_QUERY,
-                getParams(getDefModel()),
-                (row) -> assertChatCompletion(row, getDefModel()));
+                getParams(chatModel),
+                (row) -> assertChatCompletion(row, chatModel));
     }
     
     private Map<String, Object> getParams(String model) {

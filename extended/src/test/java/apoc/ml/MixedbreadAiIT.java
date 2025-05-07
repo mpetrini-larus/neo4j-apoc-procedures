@@ -6,12 +6,12 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.neo4j.test.rule.DbmsRule;
 import org.neo4j.test.rule.ImpermanentDbmsRule;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static apoc.ml.MLUtil.MODEL_CONF_KEY;
 import static apoc.ml.MixedbreadAI.*;
@@ -24,7 +24,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public abstract class MixedbreadAiBaseIT {
+@RunWith(Parameterized.class)
+public class MixedbreadAiIT {
 
     @ClassRule
     public static DbmsRule db = new ImpermanentDbmsRule();
@@ -41,7 +42,20 @@ public abstract class MixedbreadAiBaseIT {
         TestUtil.registerProcedure(db, MixedbreadAI.class);
     }
 
-    abstract String getDefModel();
+    @Parameterized.Parameters(name = "chatModel: {0}")
+    public static Collection<String[]> data() {
+        return Arrays.asList(new String[][] {
+                // tests with model evaluated
+                {"mxbai-embed-2d-large-v1"},
+                {"mixedbread-ai/mxbai-rerank-large-v1"},
+                {"mixedbread-ai/mxbai-rerank-large-v2"},
+                // tests with default model
+                {null}
+        });
+    }
+
+    @Parameterized.Parameter(0)
+    public String chatModel;
 
     protected String getApiKey(){
         return apiKey;
@@ -199,7 +213,7 @@ public abstract class MixedbreadAiBaseIT {
                 "The Great Gatsby, a novel written by American author F. Scott Fitzgerald, was published in 1925. The story is set in the Jazz Age and follows the life of millionaire Jay Gatsby and his pursuit of Daisy Buchanan."
         );
         Map<String, Object> conf = map(ENDPOINT_CONF_KEY, MIXEDBREAD_BASE_URL + "/reranking",
-                MODEL_CONF_KEY, getDefModel(),
+                MODEL_CONF_KEY, chatModel,
                 "query", "Who is the author of To Kill a Mockingbird?",
                 "top_k", 3,
                 "input", input
